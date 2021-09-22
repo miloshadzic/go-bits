@@ -9,8 +9,8 @@ func TestAppend(t *testing.T) {
 	list.Append(2)
 	list.Append(3)
 
-	var actual = list.Last().value
-	var expected = 3
+	actual := list.Last().value
+	expected := 3
 
 	if actual != expected {
 		t.Fatalf("Expected last value of list to be %d, got %d", expected, actual)

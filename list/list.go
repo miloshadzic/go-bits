@@ -9,7 +9,7 @@ type Node struct {
 
 // Returns a pointer to the last element of the list.
 func (self *Node) Last() *Node {
-	var temp *Node = self
+	temp := self
 
 	for temp.next != nil {
 		temp = temp.next
@@ -78,7 +78,7 @@ func (self *Node) Equal(other *Node) bool {
 // Prints out the linked list on a new line.
 // Format: [ a, b, c ]
 func (self *Node) Debug() {
-	var temp *Node = self
+	temp := self
 
 	fmt.Print("[ ")
 
