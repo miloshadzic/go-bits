@@ -7,6 +7,7 @@ type Node struct {
 	value int
 }
 
+// Returns a pointer to the last element of the list.
 func (self *Node) Last() *Node {
 	var temp *Node = self
 
@@ -17,16 +18,32 @@ func (self *Node) Last() *Node {
 	return temp
 }
 
-func (self *Node) Append(value int) error {
-	self.Last().next = &Node{nil, value}
+// Append an element to the end of the list. Returns a pointer to the new
+// element.
+func (self *Node) Append(value int) *Node {
+	node := &Node{nil, value}
 
-	return nil
+	self.Last().next = node
+
+	return node
 }
 
+// Prepend an element to the list and return a pointer to the new element.
+func (self *Node) Push(value int) *Node {
+	return &Node{self, value}
+}
+
+// Removes the first element. Returns the value of the removed element and the new head.
+func (self *Node) Pop() (head *Node, value int) {
+	head = self.next
+	self.next = nil
+
+	return head, self.value
+}
+
+// Reverses the list in place. Returns a pointer new head of the list.
 func (self *Node) Reverse() *Node {
-	var temp *Node = self
-	var prev *Node
-	var next *Node
+	var temp, prev, next *Node = self, nil, nil
 
 	for temp != nil {
 		next = temp.next
@@ -38,6 +55,8 @@ func (self *Node) Reverse() *Node {
 	return prev
 }
 
+// Prints out the linked list on a new line.
+// Format: [ a, b, c ]
 func (self *Node) Debug() {
 	var temp *Node = self
 
