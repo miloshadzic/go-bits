@@ -55,6 +55,26 @@ func (self *Node) Reverse() *Node {
 	return prev
 }
 
+// Two lists are equal if all of their values are the same.
+func (self *Node) Equal(other *Node) bool {
+	if other == nil {
+		return false
+	}
+
+	left, right := self, other
+
+	for left != nil {
+		if left.value == right.value {
+			left = left.next
+			right = right.next
+		} else {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Prints out the linked list on a new line.
 // Format: [ a, b, c ]
 func (self *Node) Debug() {
