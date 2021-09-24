@@ -3,11 +3,11 @@
 A priority queue implementation to practice some Go. Mostly like the
 Skiena book implementation.
 
-Weird decision but I return -1, as a sort of "error" for pq.parent() but
-then real errors for Peek() etc. The current reasoning is that parent
-returns an int array index, for which -1 is obviously an invalid value.
-On the other hand Peek() returns any valid integer, so aside from
-min/max value, there's no integer value that could double as an
+Weird decision but I return -1, as a sort of "error" for pq.parent()
+but then real errors for Peek() etc. The current reasoning is that
+parent returns an int array index, for which -1 is obviously an invalid
+value. On the other hand Peek() returns any valid integer, so aside
+from min/max value, there's no integer value that could double as an
 error-like value.
 
 I could just use errors everywhere but I don't have a clear idea yet
@@ -35,8 +35,8 @@ func Init() *PriorityQueue {
 	return &PriorityQueue{&heap, 0}
 }
 
-// Inserts to the back of the queue and then bubbles up maintaining the
-// invariant that parent value is always greater than that of the
+// Inserts to the back of the queue and then bubbles up maintaining
+// the invariant that parent value is always greater than that of the
 // children.
 func (q *PriorityQueue) Insert(x int) error {
 	if q.n >= PQ_SIZE {
