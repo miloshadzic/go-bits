@@ -6,7 +6,7 @@ import (
 )
 
 func TestPeek(t *testing.T) {
-	pq := pq.Init()
+	pq := pq.InitMinPriorityQueue()
 
 	_, err := pq.Peek()
 
@@ -33,7 +33,7 @@ func TestPeek(t *testing.T) {
 }
 
 func TestTake(t *testing.T) {
-	pq := pq.Init()
+	pq := pq.InitMinPriorityQueue()
 
 	_, err := pq.Take()
 

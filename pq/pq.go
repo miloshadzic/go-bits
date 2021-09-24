@@ -1,7 +1,8 @@
 /*
 
 A priority queue implementation to practice some Go. Mostly like the
-Skiena book implementation.
+Skiena book implementation. Slightly changed to allow reuse of most code
+for both sort directions
 
 Weird decision but I return -1, as a sort of "error" for pq.parent()
 but then real errors for Peek() etc. The current reasoning is that
@@ -19,26 +20,45 @@ package pq
 
 const PQ_SIZE = 32
 
-// A min PriorityQueue/Heap.
-type PriorityQueue struct {
+type PriorityQueue interface {
+	Insert(int) error
+	Take() (int, error)
+	Peek() (int, error)
+}
+
+type Heap struct {
 	heap *[PQ_SIZE]int
 	n    int
+	Direction
 }
 
-// Init returns a pointer to a new PriorityQueue. It will be of capacity
-// PQ_SIZE. This is quite close to Skiena, but honestly I probably
-// should use slices and make the size either dynamic or capped at
-// initialization time.
-func Init() *PriorityQueue {
+type Direction interface {
+	cmp(int, int) bool
+}
+
+type Min struct{}
+type Max struct{}
+
+// InitMinPriorityQueue returns a pointer to a new PriorityQueue with a
+// minimum element at the root. It will be of capacity PQ_SIZE.
+func InitMinPriorityQueue() *Heap {
 	var heap [PQ_SIZE]int
 
-	return &PriorityQueue{&heap, 0}
+	return &Heap{&heap, 0, &Min{}}
 }
 
-// Inserts to the back of the queue and then bubbles up maintaining
-// the invariant that parent value is always greater than that of the
-// children.
-func (q *PriorityQueue) Insert(x int) error {
+// InitMaxPriorityQueue returns a pointer to a new PriorityQueue with a
+// maximum element at the root. It will be of capacity PQ_SIZE.
+func InitMaxPriorityQueue() *Heap {
+	var heap [PQ_SIZE]int
+
+	return &Heap{&heap, 0, &Max{}}
+}
+
+// Inserts to the back of the queue and then bubbles up maintaining the
+// invariant that parent value is always greater or smaller than that of
+// the children (depending on the direction).
+func (q *Heap) Insert(x int) error {
 	if q.n >= PQ_SIZE {
 		return &QueueOverflowError{}
 	}
@@ -50,8 +70,9 @@ func (q *PriorityQueue) Insert(x int) error {
 	return nil
 }
 
-// Take returns the minimum element and removes it from the queue.
-func (q *PriorityQueue) Take() (int, error) {
+// Take returns the minimum/maximum element and removes it from the
+// queue.
+func (q *Heap) Take() (int, error) {
 	if q.n == 0 {
 		return -1, &EmptyQueueError{}
 	}
@@ -64,9 +85,9 @@ func (q *PriorityQueue) Take() (int, error) {
 	return val, nil
 }
 
-// Peek returns the min value without removing the element from the
+// Peek returns the min/max value without removing the element from the
 // queue.
-func (q *PriorityQueue) Peek() (int, error) {
+func (q *Heap) Peek() (int, error) {
 	if q.n == 0 {
 		return -1, &EmptyQueueError{}
 	}
@@ -74,19 +95,19 @@ func (q *PriorityQueue) Peek() (int, error) {
 	return q.heap[1], nil
 }
 
-func (q *PriorityQueue) bubbleUp(p int) {
+func (q *Heap) bubbleUp(p int) {
 	if parent(p) == -1 {
 		return
 	}
 
-	if q.heap[parent(p)] > q.heap[p] {
+	if q.cmp(q.heap[parent(p)], q.heap[p]) {
 		q.heap[parent(p)], q.heap[p] = q.heap[p], q.heap[parent(p)]
 
 		q.bubbleUp(parent(p))
 	}
 }
 
-func (q *PriorityQueue) bubbleDown(p int) (int, error) {
+func (q *Heap) bubbleDown(p int) (int, error) {
 	if q.n <= 0 {
 		return -1, &EmptyQueueError{}
 	}
@@ -96,7 +117,7 @@ func (q *PriorityQueue) bubbleDown(p int) (int, error) {
 
 	for i := 0; i <= 1; i++ {
 		if childIndex+i <= q.n {
-			if q.heap[minIndex] > q.heap[childIndex+i] {
+			if q.cmp(q.heap[minIndex], q.heap[childIndex+i]) {
 				minIndex = childIndex + i
 			}
 		}
@@ -108,6 +129,14 @@ func (q *PriorityQueue) bubbleDown(p int) (int, error) {
 	}
 
 	return q.heap[1], nil
+}
+
+func (q *Min) cmp(x, y int) bool {
+	return x > y
+}
+
+func (q *Max) cmp(x, y int) bool {
+	return x < y
 }
 
 // parent returns either a parent index (n / 2) or -1 as an "error".
