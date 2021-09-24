@@ -18,8 +18,6 @@ book.
 */
 package pq
 
-const PQ_SIZE = 32
-
 type PriorityQueue interface {
 	Insert(int) error
 	Take() (int, error)
@@ -27,7 +25,7 @@ type PriorityQueue interface {
 }
 
 type Heap struct {
-	heap *[PQ_SIZE]int
+	heap []int
 	n    int
 	Direction
 }
@@ -41,25 +39,25 @@ type Max struct{}
 
 // InitMinPriorityQueue returns a pointer to a new PriorityQueue with a
 // minimum element at the root. It will be of capacity PQ_SIZE.
-func InitMinPriorityQueue() *Heap {
-	var heap [PQ_SIZE]int
+func InitMinPriorityQueue(capacity int) *Heap {
+	heap := make([]int, capacity, capacity)
 
-	return &Heap{&heap, 0, &Min{}}
+	return &Heap{heap, 0, &Min{}}
 }
 
 // InitMaxPriorityQueue returns a pointer to a new PriorityQueue with a
 // maximum element at the root. It will be of capacity PQ_SIZE.
-func InitMaxPriorityQueue() *Heap {
-	var heap [PQ_SIZE]int
+func InitMaxPriorityQueue(capacity int) *Heap {
+	heap := make([]int, capacity, capacity)
 
-	return &Heap{&heap, 0, &Max{}}
+	return &Heap{heap, 0, &Max{}}
 }
 
 // Inserts to the back of the queue and then bubbles up maintaining the
 // invariant that parent value is always greater or smaller than that of
 // the children (depending on the direction).
 func (q *Heap) Insert(x int) error {
-	if q.n >= PQ_SIZE {
+	if q.n >= cap(q.heap) {
 		return &QueueOverflowError{}
 	}
 
