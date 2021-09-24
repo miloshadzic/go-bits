@@ -18,8 +18,8 @@ func (self *Node) Last() *Node {
 	return temp
 }
 
-// Append an element to the end of the list. Returns a pointer to the new
-// element.
+// Append an element to the end of the list. Returns a pointer to the
+// new element.
 func (self *Node) Append(value int) *Node {
 	node := &Node{nil, value}
 
@@ -28,12 +28,14 @@ func (self *Node) Append(value int) *Node {
 	return node
 }
 
-// Prepend an element to the list and return a pointer to the new element.
+// Prepend an element to the list and return a pointer to the new
+// element.
 func (self *Node) Push(value int) *Node {
 	return &Node{self, value}
 }
 
-// Removes the first element. Returns the value of the removed element and the new head.
+// Removes the first element. Returns the value of the removed element
+// and the new head.
 func (self *Node) Pop() (head *Node, value int) {
 	head = self.next
 	self.next = nil
