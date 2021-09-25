@@ -27,10 +27,10 @@ type PriorityQueue interface {
 type Heap struct {
 	heap []int
 	n    int
-	Direction
+	Comparator
 }
 
-type Direction interface {
+type Comparator interface {
 	cmp(int, int) bool
 }
 

@@ -69,5 +69,4 @@ func TestTake(t *testing.T) {
 	if err == nil {
 		t.Fatal("Expected Take to return an error when called on an empty Queue")
 	}
-
 }
