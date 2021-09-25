@@ -105,9 +105,9 @@ func (q *Heap) bubbleUp(p int) {
 	}
 }
 
-func (q *Heap) bubbleDown(p int) (int, error) {
+func (q *Heap) bubbleDown(p int) error {
 	if q.n <= 0 {
-		return -1, &EmptyQueueError{}
+		return &EmptyQueueError{}
 	}
 
 	childIndex := child(p)
@@ -126,7 +126,7 @@ func (q *Heap) bubbleDown(p int) (int, error) {
 		q.bubbleDown(minIndex)
 	}
 
-	return q.heap[1], nil
+	return nil
 }
 
 func (q *Min) cmp(x, y int) bool {
