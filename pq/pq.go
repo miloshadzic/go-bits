@@ -34,8 +34,10 @@ type Comparator interface {
 	cmp(int, int) bool
 }
 
-type Min struct{}
-type Max struct{}
+type (
+	Min struct{}
+	Max struct{}
+)
 
 // InitMinPriorityQueue returns a pointer to a new PriorityQueue with a
 // minimum element at the root. It will be of capacity PQ_SIZE.
