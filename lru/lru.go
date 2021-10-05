@@ -1,56 +1,100 @@
 package lru
 
-import "container/list"
-
-type Entry struct {
-	key string
-	val string
-}
+import "errors"
 
 type LRUCache struct {
 	cap  int
-	data map[string]*list.Element
-	list *list.List
+	data map[string]*entry
+	head *entry
+	last *entry
 }
 
-func Init(capacity int) *LRUCache {
-	data := make(map[string]*list.Element, capacity)
-	list := list.New()
-
-	return &LRUCache{capacity, data, list}
+type entry struct {
+	next *entry
+	prev *entry
+	key  string
+	val  string
 }
 
-func (self *LRUCache) Put(key string, val string) {
-	// Is there anything already under that key in the map?
-	e := self.data[key]
+func NewLRUCache(cap int) *LRUCache {
+	data := make(map[string]*entry, cap)
 
-	if e == nil {
-		if len(self.data) == self.cap {
-			last := self.list.Back()
+	return &LRUCache{cap, data, nil, nil}
+}
 
-			delete(self.data, last.Value.(Entry).key)
+func (this *LRUCache) Get(key string) (string, error) {
+	e := this.data[key]
+	if e != nil {
+		this.moveToFront(e)
+		return e.val, nil
+	} else {
+		return "", errors.New("Key not in cache.")
+	}
+}
 
-			self.list.Remove(last)
+func (this *LRUCache) Put(key string, val string) {
+	_, err := this.Get(key)
+	// Key was not in map already
+	if err != nil {
+		e := entry{nil, nil, key, val}
+		this.prepend(&e)
+
+		if len(this.data) == this.cap {
+			this.truncate()
 		}
 
-		self.data[key] = self.list.PushFront(Entry{key, val})
+		this.data[key] = &e
 	} else {
-		e.Value = val
-		self.list.MoveToFront(e)
+		this.data[key].val = val
 	}
 }
 
-func (self *LRUCache) Get(key string) string {
-	e := self.data[key]
-	if e != nil {
-		self.list.MoveToFront(e)
-
-		return e.Value.(string)
-	} else {
-		return ""
-	}
+func (this *LRUCache) Count() int {
+	return len(this.data)
 }
 
-func (self *LRUCache) Count() int {
-	return len(self.data)
+func (this *LRUCache) moveToFront(e *entry) {
+	if this.head == e {
+		return
+	} else {
+		e.prev.next = e.next
+	}
+
+	if this.last != e {
+		e.next.prev = e.prev
+
+		this.last = e.prev
+	}
+
+	e.prev = nil
+
+	this.prepend(e)
+}
+
+func (this *LRUCache) prepend(e *entry) {
+	e.next = this.head
+
+	if this.head != nil {
+		this.head.prev = e
+	} else {
+		this.last = e
+	}
+
+	for this.last.next != nil {
+		this.last = this.last.next
+	}
+
+	this.head = e
+}
+
+func (this *LRUCache) truncate() *entry {
+	e := this.last
+
+	this.last = e.prev
+	e.prev = nil
+	this.last.next = nil
+
+	delete(this.data, e.key)
+
+	return e
 }
