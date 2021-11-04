@@ -94,7 +94,7 @@ func (this *list) bubbleDown(n *node) {
 	// When we're at this boundary, we have two cases:
 	//
 	//   1. We're at the end, in which case we need to perform a head/tail
-	//		swap
+	//      swap
 	//
 	//   2. We've arrived up to a node which has a higher
 	//      count. We need to insert n between the current node t, and that
